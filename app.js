@@ -107,13 +107,30 @@ function createInputs(container, cellSize) {
                 input.style.border = 'none';
                 input.style.outline = 'none';
                 input.style.background = 'transparent';
+input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace') {
+        if (e.target.selectionStart === 0) {
+            const moved = moveToPreviousInput(e.target);
+            if (moved) {
+                moved.value = '';  // Clear previous cell
+                e.preventDefault();
+            }
+        }
+    }
+});
 
-                input.addEventListener('input', (e) => {
-                    if (e.target.value.length === 1) {
-                        moveToNextInput(e.target);
-                    }
-                    checkSolution();
-                });
+
+input.addEventListener('input', (e) => {
+    const val = e.target.value.toUpperCase();
+    e.target.value = val;
+
+    if (val.length === 1) {
+        moveToNextInput(e.target);
+    }
+
+    checkSolution();
+});
+
 
                 inputLayer.appendChild(input);
             }
@@ -128,22 +145,71 @@ function moveToNextInput(currentInput) {
     const row = parseInt(currentInput.dataset.row);
     const col = parseInt(currentInput.dataset.col);
 
-    const nextRow = row + 1;
+    // 1. Try next column (right)
+    for (let c = col + 1; c < crossword.width; c++) {
+        const nextInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${c}"]`);
+        if (nextInput && !nextInput.value) {
+            nextInput.focus();
+            return;
+        }
+    }
 
-    // Try to find cell directly below
-    const belowInput = document.querySelector(`#puzzle input[data-row="${nextRow}"][data-col="${col}"]`);
+    // 2. If no right cell found, try next row (down)
+    for (let r = row + 1; r < crossword.height; r++) {
+        const downInput = document.querySelector(`#puzzle input[data-row="${r}"][data-col="${col}"]`);
+        if (downInput && !downInput.value) {
+            downInput.focus();
+            return;
+        }
+    }
 
-    if (belowInput) {
-        belowInput.focus();
-    } else {
-        // fallback: move to next input in DOM order (reading order)
-        const inputs = [...document.querySelectorAll('#puzzle input')];
-        const idx = inputs.indexOf(currentInput);
-        if (idx >= 0 && idx + 1 < inputs.length) {
-            inputs[idx + 1].focus();
+    // 3. Fallback: search reading order (DOM order)
+    const inputs = [...document.querySelectorAll('#puzzle input')];
+    let idx = inputs.indexOf(currentInput);
+    while (++idx < inputs.length) {
+        if (!inputs[idx].value) {
+            inputs[idx].focus();
+            return;
         }
     }
 }
+
+
+function moveToPreviousInput(currentInput) {
+    const row = parseInt(currentInput.dataset.row);
+    const col = parseInt(currentInput.dataset.col);
+
+    // 1. Try previous column (left)
+    for (let c = col - 1; c >= 0; c--) {
+        const prevInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${c}"]`);
+        if (prevInput) {
+            prevInput.focus();
+            return prevInput;
+        }
+    }
+
+    // 2. Try previous row (up)
+    for (let r = row - 1; r >= 0; r--) {
+        const upInput = document.querySelector(`#puzzle input[data-row="${r}"][data-col="${col}"]`);
+        if (upInput) {
+            upInput.focus();
+            return upInput;
+        }
+    }
+
+    // 3. Fallback reverse DOM order
+    const inputs = [...document.querySelectorAll('#puzzle input')];
+    let idx = inputs.indexOf(currentInput);
+    while (--idx >= 0) {
+        if (inputs[idx]) {
+            inputs[idx].focus();
+            return inputs[idx];
+        }
+    }
+
+    return null;
+}
+
 
 
 // Build solution row based on solutionMap letters
