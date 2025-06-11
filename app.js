@@ -125,12 +125,26 @@ function createInputs(container, cellSize) {
 
 // Auto-advance logic
 function moveToNextInput(currentInput) {
-    const inputs = [...document.querySelectorAll('#puzzle input')];
-    const idx = inputs.indexOf(currentInput);
-    if (idx >= 0 && idx + 1 < inputs.length) {
-        inputs[idx + 1].focus();
+    const row = parseInt(currentInput.dataset.row);
+    const col = parseInt(currentInput.dataset.col);
+
+    const nextRow = row + 1;
+
+    // Try to find cell directly below
+    const belowInput = document.querySelector(`#puzzle input[data-row="${nextRow}"][data-col="${col}"]`);
+
+    if (belowInput) {
+        belowInput.focus();
+    } else {
+        // fallback: move to next input in DOM order (reading order)
+        const inputs = [...document.querySelectorAll('#puzzle input')];
+        const idx = inputs.indexOf(currentInput);
+        if (idx >= 0 && idx + 1 < inputs.length) {
+            inputs[idx + 1].focus();
+        }
     }
 }
+
 
 // Build solution row based on solutionMap letters
 function buildSolutionRow() {

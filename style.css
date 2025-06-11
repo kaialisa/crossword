@@ -1,5 +1,5 @@
 body {
-    font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+    font-family: 'Quicksand', sans-serif;
     margin: 40px;
     background-color: #f8f9fa;
 }
@@ -7,20 +7,24 @@ body {
 h1 {
     text-align: center;
     color: #023E7C;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 32px;
+    letter-spacing: 0.5px;
 }
 
 /* Puzzle inputs (overlaid on SVG grid) */
 #puzzle input {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-    font-weight: 500;
+    width: 100%;
+    height: 100%;
+    font-size: 30px;
+    font-weight: 300;
+    font-family: 'Quicksand', sans-serif;
     text-align: center;
+    text-transform: uppercase;
     border: none;
     outline: none;
     background: transparent;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Solution row layout */
@@ -47,7 +51,8 @@ h1 {
     right: 2px;
     font-size: 16px;
     color: #003399;
-    font-weight: 700;
+    font-weight: 600;
+    font-family: 'Quicksand', sans-serif;
 }
 
 /* Solution input fields */
@@ -56,9 +61,11 @@ h1 {
     height: 100%;
     text-align: center;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 300;
+    font-family: 'Quicksand', sans-serif;
     border: none;
     outline: none;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Optional: prevent weird selection highlight */
@@ -68,15 +75,7 @@ input::selection {
 
 /* Slightly larger clue numbers inside the puzzle */
 .number {
-    font-size: 12px !important;
+    font-size: 14px !important;
     fill: black;
-}
-
-/* For down and right arrows: pure Unicode arrows */
-.arrow-down {
-    content: "↓";
-}
-
-.arrow-across {
-    content: "→";
+    font-family: 'Quicksand', sans-serif;
 }
