@@ -16,32 +16,40 @@ function buildGrid() {
     svg.setAttribute("width", crossword.width * cellSize);
     svg.setAttribute("height", crossword.height * cellSize);
 
-    // Render SVG cells
-    for (let row = 0; row < crossword.height; row++) {
-        for (let col = 0; col < crossword.width; col++) {
-            const isBlocked = crossword.blocks.some(([r, c]) => r === row && c === col);
+    // First: draw non-blocked rectangles
+for (let row = 0; row < crossword.height; row++) {
+    for (let col = 0; col < crossword.width; col++) {
+        const isBlocked = crossword.blocks.some(([r, c]) => r === row && c === col);
+        if (!isBlocked) {
             const rect = document.createElementNS(svgNS, "rect");
             rect.setAttribute("x", col * cellSize);
             rect.setAttribute("y", row * cellSize);
             rect.setAttribute("width", cellSize);
             rect.setAttribute("height", cellSize);
-            rect.setAttribute("fill", isBlocked ? "transparent" : "white");
-            rect.setAttribute("stroke", isBlocked ? "transparent" : "#333");
+            rect.setAttribute("fill", "white");
+            rect.setAttribute("stroke", "#333");
             rect.setAttribute("stroke-width", "1");
             svg.appendChild(rect);
-
- // Render clue numbers
-const num = crossword.numbers[`${row},${col}`];
-if (num && !isBlocked) {
-    const text = document.createElementNS(svgNS, "text");
-    text.setAttribute("x", col * cellSize + 3);
-    text.setAttribute("y", row * cellSize + 10);
-    text.setAttribute("font-size", "12px"); // <-- also apply your larger size here
-    text.textContent = Object.entries(num)
-        .map(([dir, n]) => `${n}${dir === 'across' ? '\u2192' : '\u2193'}`)
-        .join(' ');
-    svg.appendChild(text);
+        }
+    }
 }
+
+// Second: draw transparent blocked rectangles
+for (let row = 0; row < crossword.height; row++) {
+    for (let col = 0; col < crossword.width; col++) {
+        const isBlocked = crossword.blocks.some(([r, c]) => r === row && c === col);
+        if (isBlocked) {
+            const rect = document.createElementNS(svgNS, "rect");
+            rect.setAttribute("x", col * cellSize);
+            rect.setAttribute("y", row * cellSize);
+            rect.setAttribute("width", cellSize);
+            rect.setAttribute("height", cellSize);
+            rect.setAttribute("fill", "transparent");
+            rect.setAttribute("stroke", "none");
+            svg.appendChild(rect);
+        }
+
+
 
 
             // Render solution map letters (blue labels)
