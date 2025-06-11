@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Crossword Grid Helper</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+        }
+        #grid {
+            display: grid;
+            margin: 20px auto;
+            gap: 2px;
+        }
+        .cell {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #aaa;
+            background-color: white;
+            cursor: pointer;
+        }
+        .blocked {
+            background-color: black;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Crossword Grid Builder</h1>
+
+<div>
+    Breite (Spalten): <input id="width" type="number" value="20" min="1" max="40">
+    Höhe (Zeilen): <input id="height" type="number" value="20" min="1" max="40">
+    <button onclick="createGrid()">Grid erstellen</button>
+</div>
+
+<div id="grid"></div>
+
+<button onclick="exportBlocked()">Export Blocked Cells</button>
+
+<script>
+let gridData = [];
+
+function createGrid() {
+    const grid = document.getElementById('grid');
+    const width = parseInt(document.getElementById('width').value);
+    const height = parseInt(document.getElementById('height').value);
+    grid.style.gridTemplateColumns = `repeat(${width}, 40px)`;
+    grid.innerHTML = '';
+    gridData = [];
+
+    for (let row = 0; row < height; row++) {
+        gridData[row] = [];
+        for (let col = 0; col < width; col++) {
+            gridData[row][col] = false; // false = open
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.addEventListener('click', () => toggleCell(cell, row, col));
+            grid.appendChild(cell);
+        }
+    }
+}
+
+function toggleCell(cell, row, col) {
+    gridData[row][col] = !gridData[row][col];
+    cell.classList.toggle('blocked');
+}
+
+function exportBlocked() {
+    const blocked = [];
+    for (let row = 0; row < gridData.length; row++) {
+        for (let col = 0; col < gridData[row].length; col++) {
+            if (gridData[row][col]) {
+                blocked.push([row, col]);
+            }
+        }
+    }
+    console.log('Blocked cells:', JSON.stringify(blocked));
+}
+</script>
+
+</body>
+</html>

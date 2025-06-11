@@ -1,6 +1,6 @@
 const crossword = {
-    width: 5,
-    height: 5,
+    width: 21,
+    height: 27,
     blocks: [
         [0,1], [1,3], [2,2], [3,1], [4,3]
     ],
