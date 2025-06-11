@@ -10,17 +10,18 @@
 
     <h1>Wasserrätsel</h1>
 
-    <!-- Puzzle grid container -->
+    <!-- Puzzle grid container --><div id="main-wrapper" style="position: relative;">
+         <div id="puzzle-background"></div>
     <div id="puzzle-wrapper" style="position: relative;">
-    <div id="puzzle-background"></div>
+   
     <div id="puzzle"></div>
 </div>
-<div id="solution-container"></div>
+
 
 
     <!-- Solution word container -->
     <div id="solution-container" style="display: flex; justify-content: center; margin: 30px 0; gap: 5px;"></div>
-
+</div>
     <!-- Load puzzle data + logic -->
     <script src="data.js"></script>
     <script src="app.js"></script>
