@@ -3,24 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Crossword Grid Editor v3</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; }
-        #grid { display: grid; margin: 20px auto; gap: 2px; }
-        .cell {
-            width: 40px; height: 40px; border: 1px solid #aaa;
-            background-color: white; position: relative; cursor: pointer;
-        }
-        .blocked { background-color: black; }
-        .number { position: absolute; top: 2px; left: 2px; font-size: 10px; color: black; white-space: pre; text-align: left; }
-        .solution { position: absolute; bottom: 2px; right: 2px; font-size: 14px; color: blue; opacity: 0.5; }
-        button, input, select { margin: 5px; }
-        textarea { width: 90%; height: 150px; margin-top: 10px; }
-        .selected { outline: 2px solid red; }
-    </style>
+    <link rel="stylesheet" href="grid-helper.css">
+
 </head>
 <body>
+<div class="wrapper">
 
-<h1>Crossword Builder v3</h1>
+<h1>Crossword Builder</h1>
 
 <div>
     Breite: <input id="width" type="number" value="21" min="1" max="40">
@@ -238,6 +227,6 @@ function convert() {
   }
 }
 </script>
-
+</div>
 </body>
 </html>

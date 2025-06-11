@@ -268,7 +268,7 @@ function buildSolutionRow() {
 }
 
 
-// Correctly update the solution row
+// Update the solution row
 function checkSolution() {
     const sortedLetters = Object.keys(crossword.solutionMap).sort();
 
