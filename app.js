@@ -50,6 +50,31 @@ for (let row = 0; row < crossword.height; row++) {
         }
 
 
+// Render clue numbers
+const num = crossword.numbers[`${row},${col}`];
+if (num && !isBlocked) {
+    
+    // Render down clue in top-left
+    if (num.down !== undefined) {
+        const downText = document.createElementNS(svgNS, "text");
+        downText.setAttribute("x", col * cellSize + 3);
+        downText.setAttribute("y", row * cellSize + 10);
+        downText.setAttribute("font-size", "12px");
+        downText.textContent = `${num.down}↓`;
+        svg.appendChild(downText);
+    }
+    
+    // Render across clue in bottom-left
+    if (num.across !== undefined) {
+        const acrossText = document.createElementNS(svgNS, "text");
+        acrossText.setAttribute("x", col * cellSize + 3);
+        acrossText.setAttribute("y", (row + 1) * cellSize - 5);  // bottom of cell
+        acrossText.setAttribute("font-size", "12px");
+        acrossText.textContent = `${num.across}→`; 
+        svg.appendChild(acrossText);
+    }
+}
+
 
 
             // Render solution map letters (blue labels)
