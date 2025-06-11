@@ -6,11 +6,23 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Wasserrätsel</h1>
-    <div id="puzzle"></div>
-    <div id="solution"></div>
 
+    <h1>Wasserrätsel</h1>
+
+    <!-- Puzzle grid container -->
+    <div id="puzzle-wrapper" style="position: relative;">
+    <div id="puzzle-background"></div>
+    <div id="puzzle"></div>
+</div>
+<div id="solution-container"></div>
+
+
+    <!-- Solution word container -->
+    <div id="solution-container" style="display: flex; justify-content: center; margin: 30px 0; gap: 5px;"></div>
+
+    <!-- Load puzzle data + logic -->
     <script src="data.js"></script>
     <script src="app.js"></script>
+
 </body>
 </html>
