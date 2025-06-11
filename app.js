@@ -146,18 +146,18 @@ function moveToNextInput(currentInput) {
     const col = parseInt(currentInput.dataset.col);
 
     // 1. Try next column (right)
-    for (let c = col + 1; c < crossword.width; c++) {
-        const nextInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${c}"]`);
-        if (nextInput && !nextInput.value) {
-            nextInput.focus();
+    if (col + 1 < crossword.width) {
+        const rightInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${col + 1}"]`);
+        if (rightInput) {
+            rightInput.focus();
             return;
         }
     }
 
     // 2. If no right cell found, try next row (down)
-    for (let r = row + 1; r < crossword.height; r++) {
-        const downInput = document.querySelector(`#puzzle input[data-row="${r}"][data-col="${col}"]`);
-        if (downInput && !downInput.value) {
+    if (row + 1 < crossword.height) {
+        const downInput = document.querySelector(`#puzzle input[data-row="${row + 1}"][data-col="${col}"]`);
+        if (downInput) {
             downInput.focus();
             return;
         }
@@ -180,20 +180,20 @@ function moveToPreviousInput(currentInput) {
     const col = parseInt(currentInput.dataset.col);
 
     // 1. Try previous column (left)
-    for (let c = col - 1; c >= 0; c--) {
-        const prevInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${c}"]`);
-        if (prevInput) {
-            prevInput.focus();
-            return prevInput;
+     if (col - 1 >= 0) {
+        const leftInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${col - 1}"]`);
+        if (leftInput) {
+            leftInput.focus();
+            return;
         }
     }
 
     // 2. Try previous row (up)
-    for (let r = row - 1; r >= 0; r--) {
-        const upInput = document.querySelector(`#puzzle input[data-row="${r}"][data-col="${col}"]`);
+   if (row - 1 >= 0) {
+        const upInput = document.querySelector(`#puzzle input[data-row="${row - 1}"][data-col="${col}"]`);
         if (upInput) {
             upInput.focus();
-            return upInput;
+            return;
         }
     }
 
