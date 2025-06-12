@@ -10,6 +10,7 @@ function buildGrid() {
     // Create container for SVG + inputs (relative parent)
     const container = document.createElement('div');
     container.style.position = 'relative';
+    container.style.zIndex = '0';
     container.style.width = (crossword.width * cellSize) + 'px';
     container.style.height = (crossword.height * cellSize) + 'px';
     container.style.margin = 'auto';
@@ -97,21 +98,24 @@ if (num && !isBlocked) {
     }
 
     container.appendChild(svg);
-    puzzleWrapper.appendChild(container);
+createInputs(container, cellSize);  // this will append the inputs AFTER svg
+puzzleWrapper.appendChild(container);
+buildSolutionRow();
+checkSolution();
 
-    createInputs(container, cellSize);
-    buildSolutionRow();
-    checkSolution();
+
 }
 
 // Build input fields over the SVG grid
 function createInputs(container, cellSize) {
     const inputLayer = document.createElement('div');
-    inputLayer.style.position = 'absolute';
-    inputLayer.style.top = '0';
-    inputLayer.style.left = '0';
-    inputLayer.style.width = '100%';
-    inputLayer.style.height = '100%';
+inputLayer.style.position = 'absolute';
+inputLayer.style.top = '0';
+inputLayer.style.left = '0';
+inputLayer.style.width = '100%';
+inputLayer.style.height = '100%';
+inputLayer.style.pointerEvents = 'none';
+inputLayer.style.zIndex = '1'; 
 
     for (let row = 0; row < crossword.height; row++) {
         for (let col = 0; col < crossword.width; col++) {
@@ -127,7 +131,7 @@ wrapper.style.left = `${col * cellSize}px`;
 wrapper.style.top = `${row * cellSize}px`;
 wrapper.style.width = `${cellSize}px`;
 wrapper.style.height = `${cellSize}px`;
-wrapper.style.background = 'white';
+wrapper.style.background = 'transparent';
 
 
                 // Create input inside wrapper
@@ -145,7 +149,9 @@ wrapper.style.background = 'white';
                 input.style.border = 'none';
                 input.style.outline = 'none';
                 input.style.background = 'transparent';
-
+                input.style.pointerEvents = 'auto';
+input.style.zIndex = '2';  // <-- Inputs themselves above everything
+input.style.pointerEvents = 'auto';
                 // Attach event listeners BEFORE appending
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Backspace') {
@@ -200,8 +206,9 @@ wrapper.style.background = 'white';
             }
         }
     }
+container.insertBefore(inputLayer, container.firstChild);
 
-    container.appendChild(inputLayer);
+
 }
 
 
