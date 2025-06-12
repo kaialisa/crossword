@@ -188,12 +188,22 @@ function moveToNextInput(currentInput) {
         }
     }
 
-    // 3. Fallback: search reading order (DOM order)
+
+    // 3. Fallback: search remaining inputs after current
     const inputs = [...document.querySelectorAll('#puzzle input')];
     let idx = inputs.indexOf(currentInput);
-    while (++idx < inputs.length) {
-        if (!inputs[idx].value) {
-            inputs[idx].focus();
+
+    for (let i = idx + 1; i < inputs.length; i++) {
+        if (!inputs[i].value) {
+            inputs[i].focus();
+            return;
+        }
+    }
+
+    // 4. If none found, wrap around to start
+    for (let i = 0; i <= idx; i++) {
+        if (!inputs[i].value) {
+            inputs[i].focus();
             return;
         }
     }
@@ -222,19 +232,26 @@ function moveToPreviousInput(currentInput) {
         }
     }
 
-    // 3. Fallback reverse DOM order
+
+    // 3. Fallback: search remaining inputs before current
     const inputs = [...document.querySelectorAll('#puzzle input')];
     let idx = inputs.indexOf(currentInput);
-    while (--idx >= 0) {
-        if (inputs[idx]) {
-            inputs[idx].focus();
-            return inputs[idx];
+
+    for (let i = idx - 1; i >= 0; i--) {
+        if (inputs[i]) {
+            inputs[i].focus();
+            return;
         }
     }
 
-    return null;
+    // 4. If none found, wrap around to last input
+    for (let i = inputs.length - 1; i > idx; i--) {
+        if (inputs[i]) {
+            inputs[i].focus();
+            return;
+        }
+    }
 }
-
 
 
 // Build solution row based on solutionMap letters
