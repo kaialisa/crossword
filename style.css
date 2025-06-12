@@ -12,7 +12,9 @@ h1 {
     font-weight: 500;
     font-size: 32px;
     letter-spacing: 0.5px;
+    margin-top: 60px;
 }
+
 
 #main-layout {
     display: flex;
@@ -94,16 +96,6 @@ h1 {
     background-color: #cddff6;  /* muted blue hover */
 }
 
-/* Hide mobile clue list by default */
-#mobile-clue-list {
-    display: none;
-    padding: 20px;
-    max-width: 900px;
-    margin: 20px auto;
-    background: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
 
 /* Mobile rules */
 @media (max-width: 768px) {
@@ -114,10 +106,6 @@ h1 {
 
     #clue-sidebar {
         display: none;
-    }
-
-    #mobile-clue-list {
-        display: block;
     }
 }
 
