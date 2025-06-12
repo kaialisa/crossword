@@ -9,11 +9,15 @@ function buildGrid() {
 
     // Create container for SVG + inputs (relative parent)
     const container = document.createElement('div');
-    container.style.position = 'relative';
-    container.style.zIndex = '0';
-    container.style.width = (crossword.width * cellSize) + 'px';
-    container.style.height = (crossword.height * cellSize) + 'px';
-    container.style.margin = 'auto';
+container.classList.add('puzzle-scaler');
+container.style.setProperty('--puzzle-aspect', `${crossword.height / crossword.width}`);
+
+// internal fixed pixel size for JS placement:
+container.style.width = (crossword.width * cellSize) + 'px';
+container.style.height = (crossword.height * cellSize) + 'px';
+container.style.position = 'relative';
+container.style.zIndex = '0';
+
 
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("width", crossword.width * cellSize);
@@ -99,12 +103,32 @@ if (num && !isBlocked) {
 
     container.appendChild(svg);
 createInputs(container, cellSize);  // this will append the inputs AFTER svg
-puzzleWrapper.appendChild(container);
+const outerWrapper = document.createElement('div');
+outerWrapper.appendChild(container);
+puzzleWrapper.appendChild(outerWrapper);
 buildSolutionRow();
 checkSolution();
 
 
 }
+
+function autoScalePuzzle() {
+    const scaleContainer = document.getElementById('puzzle-scale-container');
+
+
+    const availableWidth = window.innerWidth - 40;
+    const puzzleWidth = crossword.width * 40;
+
+    const scaleFactor = Math.min(1, availableWidth / puzzleWidth);
+
+    scaleContainer.style.transform = `scale(${scaleFactor})`;
+    scaleContainer.style.transformOrigin = 'top center';
+}
+
+
+window.addEventListener('resize', autoScalePuzzle);
+autoScalePuzzle();
+
 
 function buildSidebar() {
     const sidebar = document.getElementById('clue-sidebar');
