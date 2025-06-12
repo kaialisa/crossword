@@ -133,7 +133,12 @@ autoScalePuzzle();
 function buildSidebar() {
     const sidebar = document.getElementById('clue-sidebar');
     sidebar.innerHTML = '';
-
+// Add static question at top
+    const header = document.createElement('div');
+    header.innerText = 'In welchem Bundesland werden diese Feste gefeiert?';
+    header.style.fontWeight = 'bold';
+    header.style.marginBottom = '20px';
+    sidebar.appendChild(header);
     const clueOrder = getClueOrder();
 
     clueOrder.forEach(clueRef => {
@@ -155,7 +160,7 @@ function buildSidebar() {
         });
         sidebar.appendChild(clueElement);
 
-        // Mobile clue (no click needed)
+        // Mobile clue 
         const mobileClue = document.createElement('div');
         mobileClue.innerText = fullText;
         mobileClue.style.marginBottom = '10px';
@@ -545,9 +550,18 @@ function updateActiveCluePopup() {
 
     const clue = crossword.clues[selectedClue.direction][selectedClue.number];
     const clueText = clue.text || 'Hinweis nicht gefunden';
-    popup.textContent = `${selectedClue.number}. ${clueText}`;
+
+    popup.innerHTML = `
+        <div style="font-weight: bold; margin-bottom: 10px;">
+            In welchem Bundesland werden diese Feste gefeiert?
+        </div>
+        <div>
+            ${selectedClue.number}. ${clueText}
+        </div>
+    `;
     popup.style.display = 'block';
 }
+
 
 
 
