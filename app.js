@@ -106,6 +106,36 @@ checkSolution();
 
 }
 
+function buildSidebar() {
+    const sidebar = document.getElementById('clue-sidebar');
+    sidebar.innerHTML = '';
+
+    const clueOrder = getClueOrder();
+
+    clueOrder.forEach(clueRef => {
+        const clueData = crossword.clues[clueRef.direction][clueRef.number];
+        const clueText = clueData.text || `Clue ${clueRef.number}`;
+
+        const clueElement = document.createElement('div');
+        clueElement.innerText = `${clueRef.number}. (${clueRef.direction}) ${clueText}`;
+        clueElement.style.marginBottom = '10px';
+        clueElement.style.cursor = 'pointer';
+
+        clueElement.addEventListener('click', () => {
+            selectedClue = clueRef;
+            highlightClueCells();
+
+            // focus first cell of clue
+            const [firstRow, firstCol] = clueData.cells[0];
+            const input = document.querySelector(`#puzzle input[data-row="${firstRow}"][data-col="${firstCol}"]`);
+            if (input) input.focus();
+        });
+
+        sidebar.appendChild(clueElement);
+    });
+}
+
+
 // Build input fields over the SVG grid
 function createInputs(container, cellSize) {
     const inputLayer = document.createElement('div');
@@ -446,3 +476,4 @@ function highlightClueCells() {
 
 
 buildGrid();
+buildSidebar();
