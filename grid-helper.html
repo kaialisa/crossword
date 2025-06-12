@@ -107,6 +107,21 @@ function assignData() {
 
         if (!isNaN(clueNumber)) {
             gridData.numbers[`${row},${col}`][direction] = clueNumber;
+
+            if (!gridData.clues) gridData.clues = {};
+            if (!gridData.clues[direction]) gridData.clues[direction] = {};
+
+            const cells = [];
+            let r = row, c = col;
+            while (r < gridData.height && c < gridData.width) {
+                const isBlocked = gridData.blocks.some(([br, bc]) => br === r && bc === c);
+                if (isBlocked) break;
+                cells.push([r, c]);
+                if (direction === "across") c++;
+                else r++;
+            }
+
+            gridData.clues[direction][clueNumber] = { start: [row, col], cells };
         }
 
         if (solutionLetter) {
@@ -119,6 +134,7 @@ function assignData() {
 
     saveToStorage();
 }
+
 
 function updateLabels(cell, row, col) {
     cell.querySelector('.number')?.remove();
