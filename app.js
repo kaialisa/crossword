@@ -1,7 +1,3 @@
-console.log(crossword);
-console.log(crossword.clues);
-console.log(crossword.clues.across);
-
 let selectedClue = { direction: null, number: null };
 function buildGrid() {
     
@@ -106,7 +102,7 @@ if (num && !isBlocked) {
     }
 
     container.appendChild(svg);
-createInputs(container, cellSize);  // this will append the inputs AFTER svg
+createInputs(container, cellSize);  
 const outerWrapper = document.createElement('div');
 outerWrapper.appendChild(container);
 puzzleWrapper.appendChild(outerWrapper);
@@ -262,6 +258,7 @@ input.style.pointerEvents = 'auto';
                         moveToNextInput(e.target);
                     }
                     checkSolution();
+                    saveProgress();
                 });
 
                 // Append input into wrapper
@@ -451,6 +448,36 @@ function checkSolution() {
     });
 }
 
+function saveProgress() {
+    const allInputs = document.querySelectorAll('#puzzle input');
+    const data = {};
+
+    allInputs.forEach(input => {
+        const key = `${input.dataset.row},${input.dataset.col}`;
+        data[key] = input.value || '';
+    });
+
+    localStorage.setItem('crosswordProgress', JSON.stringify(data));
+}
+
+function loadProgress() {
+    const stored = localStorage.getItem('crosswordProgress');
+    if (!stored) return;
+
+    const data = JSON.parse(stored);
+
+    for (const key in data) {
+        const [row, col] = key.split(',').map(Number);
+        const input = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${col}"]`);
+        if (input) {
+            input.value = data[key];
+        }
+    }
+
+    checkSolution();
+}
+
+
 function getCluesAtCell(row, col) {
     const clues = [];
 
@@ -528,4 +555,5 @@ function updateActiveCluePopup() {
 document.addEventListener("DOMContentLoaded", function () {
     buildGrid();
     buildSidebar();
+    loadProgress();
 });
