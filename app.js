@@ -117,7 +117,7 @@ function buildSidebar() {
         const clueText = clueData.text || `Clue ${clueRef.number}`;
 
         const clueElement = document.createElement('div');
-        clueElement.innerText = `${clueRef.number}. (${clueRef.direction}) ${clueText}`;
+        clueElement.innerText = `${clueRef.number}. ${clueText}`;
         clueElement.style.marginBottom = '10px';
         clueElement.style.cursor = 'pointer';
 
