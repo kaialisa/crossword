@@ -1,4 +1,6 @@
+let selectedClue = { direction: null, number: null };
 function buildGrid() {
+    
     const puzzleWrapper = document.getElementById('puzzle');
     puzzleWrapper.innerHTML = ''; // Clear
 
@@ -8,6 +10,7 @@ function buildGrid() {
     // Create container for SVG + inputs (relative parent)
     const container = document.createElement('div');
     container.style.position = 'relative';
+    container.style.zIndex = '0';
     container.style.width = (crossword.width * cellSize) + 'px';
     container.style.height = (crossword.height * cellSize) + 'px';
     container.style.margin = 'auto';
@@ -95,119 +98,167 @@ if (num && !isBlocked) {
     }
 
     container.appendChild(svg);
-    puzzleWrapper.appendChild(container);
+createInputs(container, cellSize);  // this will append the inputs AFTER svg
+puzzleWrapper.appendChild(container);
+buildSolutionRow();
+checkSolution();
 
-    createInputs(container, cellSize);
-    buildSolutionRow();
-    checkSolution();
+
 }
 
 // Build input fields over the SVG grid
 function createInputs(container, cellSize) {
     const inputLayer = document.createElement('div');
-    inputLayer.style.position = 'absolute';
-    inputLayer.style.top = '0';
-    inputLayer.style.left = '0';
-    inputLayer.style.width = '100%';
-    inputLayer.style.height = '100%';
+inputLayer.style.position = 'absolute';
+inputLayer.style.top = '0';
+inputLayer.style.left = '0';
+inputLayer.style.width = '100%';
+inputLayer.style.height = '100%';
+inputLayer.style.pointerEvents = 'none';
+inputLayer.style.zIndex = '1'; 
 
     for (let row = 0; row < crossword.height; row++) {
         for (let col = 0; col < crossword.width; col++) {
             const isBlocked = crossword.blocks.some(([r, c]) => r === row && c === col);
             if (!isBlocked) {
+                // Create wrapper div for proper positioning
+               const wrapper = document.createElement('div');
+wrapper.classList.add('cell-wrapper');
+wrapper.dataset.row = row;
+wrapper.dataset.col = col;
+wrapper.style.position = 'absolute';
+wrapper.style.left = `${col * cellSize}px`;
+wrapper.style.top = `${row * cellSize}px`;
+wrapper.style.width = `${cellSize}px`;
+wrapper.style.height = `${cellSize}px`;
+wrapper.style.background = 'transparent';
+
+
+                // Create input inside wrapper
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.maxLength = 1;
                 input.dataset.row = row;
                 input.dataset.col = col;
 
-                input.style.position = 'absolute';
-                input.style.left = `${col * cellSize}px`;
-                input.style.top = `${row * cellSize}px`;
-                input.style.width = `${cellSize}px`;
-                input.style.height = `${cellSize}px`;
+                input.style.width = '100%';
+                input.style.height = '100%';
                 input.style.textAlign = 'center';
                 input.style.fontSize = '18px';
                 input.style.fontWeight = 'bold';
                 input.style.border = 'none';
                 input.style.outline = 'none';
                 input.style.background = 'transparent';
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Backspace') {
-        if (e.target.selectionStart === 0) {
-            const moved = moveToPreviousInput(e.target);
-            if (moved) {
-                moved.value = '';  // Clear previous cell
-                e.preventDefault();
-            }
-        }
+                input.style.pointerEvents = 'auto';
+input.style.zIndex = '2';  // <-- Inputs themselves above everything
+input.style.pointerEvents = 'auto';
+                // Attach event listeners BEFORE appending
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (e.target.selectionStart === 0) {
+                            const moved = moveToPreviousInput(e.target);
+                            if (moved) {
+                                moved.value = '';
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                });
+
+                input.addEventListener('click', (e) => {
+    const row = parseInt(e.target.dataset.row);
+    const col = parseInt(e.target.dataset.col);
+    const availableClues = getCluesAtCell(row, col);
+
+    if (availableClues.length === 0) return; // no clue here
+
+    // If same cell, toggle between across/down
+    if (selectedClue.row === row && selectedClue.col === col) {
+        // Toggle
+        const currentIndex = availableClues.findIndex(c =>
+            c.direction === selectedClue.direction && c.number === selectedClue.number
+        );
+        const nextIndex = (currentIndex + 1) % availableClues.length;
+        selectedClue = { ...availableClues[nextIndex], row, col };
+    } else {
+        // First click — pick across if available
+        const acrossFirst = availableClues.find(c => c.direction === 'across') || availableClues[0];
+        selectedClue = { ...acrossFirst, row, col };
     }
+
+    highlightClueCells();
 });
 
 
-input.addEventListener('input', (e) => {
-    const val = e.target.value.toUpperCase();
-    e.target.value = val;
+                input.addEventListener('input', (e) => {
+                    const val = e.target.value.toUpperCase();
+                    e.target.value = val;
 
-    if (val.length === 1) {
-        moveToNextInput(e.target);
-    }
+                    if (val.length === 1) {
+                        moveToNextInput(e.target);
+                    }
+                    checkSolution();
+                });
 
-    checkSolution();
-});
-
-
-                inputLayer.appendChild(input);
+                // Append input into wrapper
+                wrapper.appendChild(input);
+                inputLayer.appendChild(wrapper);
             }
         }
     }
+container.insertBefore(inputLayer, container.firstChild);
 
-    container.appendChild(inputLayer);
+
 }
+
 
 // Auto-advance logic
 function moveToNextInput(currentInput) {
     const row = parseInt(currentInput.dataset.row);
     const col = parseInt(currentInput.dataset.col);
 
-    // 1. Try next column (right)
-    if (col + 1 < crossword.width) {
-        const rightInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${col + 1}"]`);
-        if (rightInput) {
-            rightInput.focus();
+    const possibleClues = getCluesAtCell(row, col);
+    let activeClue = null;
+
+    if (selectedClue && possibleClues.some(c => c.direction === selectedClue.direction && c.number === selectedClue.number)) {
+        activeClue = selectedClue;
+    } else if (possibleClues.length > 0) {
+        activeClue = possibleClues[0];
+    } else {
+        return defaultMoveToNextInput(currentInput);
+    }
+
+    const clue = crossword.clues[activeClue.direction][activeClue.number];
+    const idx = clue.cells.findIndex(([r, c]) => r === row && c === col);
+
+    // Try to find next empty cell inside current clue
+    for (let i = idx + 1; i < clue.cells.length; i++) {
+        const [nextRow, nextCol] = clue.cells[i];
+        const nextInput = document.querySelector(`#puzzle input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+        if (nextInput && nextInput.value === '') {
+            nextInput.focus();
             return;
         }
     }
 
-    // 2. If no right cell found, try next row (down)
-    if (row + 1 < crossword.height) {
-        const downInput = document.querySelector(`#puzzle input[data-row="${row + 1}"][data-col="${col}"]`);
-        if (downInput) {
-            downInput.focus();
-            return;
-        }
-    }
+    // End of current clue reached, move to next clue
+    const nextClue = getNextClue(activeClue);
+    if (nextClue) {
+        selectedClue = nextClue;
+        highlightClueCells();
 
-
-    // 3. Fallback: search remaining inputs after current
-    const inputs = [...document.querySelectorAll('#puzzle input')];
-    let idx = inputs.indexOf(currentInput);
-
-    for (let i = idx + 1; i < inputs.length; i++) {
-        if (!inputs[i].value) {
-            inputs[i].focus();
-            return;
-        }
-    }
-
-    // 4. If none found, wrap around to start
-    for (let i = 0; i <= idx; i++) {
-        if (!inputs[i].value) {
-            inputs[i].focus();
-            return;
+        const nextClueObj = crossword.clues[nextClue.direction][nextClue.number];
+        for (let [nextRow, nextCol] of nextClueObj.cells) {
+            const nextInput = document.querySelector(`#puzzle input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+            if (nextInput && nextInput.value === '') {
+                nextInput.focus();
+                return;
+            }
         }
     }
 }
+
+
 
 
 function moveToPreviousInput(currentInput) {
@@ -323,5 +374,63 @@ function checkSolution() {
         if (solutionInput) solutionInput.value = value;
     });
 }
+
+function getCluesAtCell(row, col) {
+    const clues = [];
+
+    for (let num in crossword.clues.across) {
+        const clue = crossword.clues.across[num];
+        if (clue.cells.some(([r, c]) => r === row && c === col)) {
+            clues.push({ direction: 'across', number: num });
+        }
+    }
+
+    for (let num in crossword.clues.down) {
+        const clue = crossword.clues.down[num];
+        if (clue.cells.some(([r, c]) => r === row && c === col)) {
+            clues.push({ direction: 'down', number: num });
+        }
+    }
+
+    return clues;
+}
+function getClueOrder() {
+    const allClues = [];
+
+    for (let num in crossword.clues.across) {
+        allClues.push({ direction: 'across', number: num });
+    }
+
+    for (let num in crossword.clues.down) {
+        allClues.push({ direction: 'down', number: num });
+    }
+
+    allClues.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+    return allClues;
+}
+function getNextClue(activeClue) {
+    const clueOrder = getClueOrder();
+    const idx = clueOrder.findIndex(c => c.direction === activeClue.direction && c.number === activeClue.number);
+    if (idx >= 0 && idx < clueOrder.length - 1) {
+        return clueOrder[idx + 1];
+    }
+    return null;
+}
+
+
+function highlightClueCells() {
+    document.querySelectorAll('#puzzle .cell-wrapper').forEach(wrapper => wrapper.classList.remove('highlighted'));
+
+    if (!selectedClue.direction || !selectedClue.number) return;
+
+    const clue = crossword.clues[selectedClue.direction][selectedClue.number];
+    clue.cells.forEach(([r, c]) => {
+        const wrapper = document.querySelector(`#puzzle .cell-wrapper[data-row="${r}"][data-col="${c}"]`);
+        if (wrapper) wrapper.classList.add('highlighted');
+    });
+}
+
+
+
 
 buildGrid();
