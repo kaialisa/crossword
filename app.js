@@ -110,32 +110,38 @@ function buildSidebar() {
     const sidebar = document.getElementById('clue-sidebar');
     sidebar.innerHTML = '';
 
+    const mobileSidebar = document.getElementById('mobile-clue-contents');
+    mobileSidebar.innerHTML = '';
+
     const clueOrder = getClueOrder();
 
     clueOrder.forEach(clueRef => {
         const clueData = crossword.clues[clueRef.direction][clueRef.number];
         const clueText = clueData.text || `Clue ${clueRef.number}`;
+        const fullText = `${clueRef.number}. ${clueText}`;
 
+        // Desktop clue
         const clueElement = document.createElement('div');
-        clueElement.innerText = `${clueRef.number}. ${clueText}`;
+        clueElement.innerText = fullText;
         clueElement.style.marginBottom = '10px';
         clueElement.style.cursor = 'pointer';
-        clueElement.classList.add('clue-item');
-
-
         clueElement.addEventListener('click', () => {
             selectedClue = clueRef;
             highlightClueCells();
-
-            // focus first cell of clue
             const [firstRow, firstCol] = clueData.cells[0];
             const input = document.querySelector(`#puzzle input[data-row="${firstRow}"][data-col="${firstCol}"]`);
             if (input) input.focus();
         });
-
         sidebar.appendChild(clueElement);
+
+        // Mobile clue (no click needed)
+        const mobileClue = document.createElement('div');
+        mobileClue.innerText = fullText;
+        mobileClue.style.marginBottom = '10px';
+        mobileSidebar.appendChild(mobileClue);
     });
 }
+
 
 
 // Build input fields over the SVG grid

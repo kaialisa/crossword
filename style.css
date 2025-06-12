@@ -12,30 +12,24 @@ h1 {
     letter-spacing: 0.5px;
 }
 
-#main-wrapper {
-    position: relative;
-    width: fit-content;
-    margin: auto;
-    padding: 30px;  
+#main-layout {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 20px;
 }
 
-
 #puzzle-wrapper {
+    max-width: 900px;
     position: relative;
-    width: fit-content;
-    margin: auto;
-    padding: 30px;
 }
 
 #puzzle-background {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     border-radius: 10px;
-    width: 100%;
-    height: 100%;
     background-image: url('gradient.jpg');
     background-size: cover;
     background-position: center;
@@ -48,8 +42,82 @@ h1 {
     z-index: 1;
 }
 
+#solution-container {
+    display: flex;
+    justify-content: center;
+    margin: 30px 0;
+    gap: 6px;
+}
 
-/* Puzzle inputs (overlaid on SVG grid) */
+.solution-box {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #333;
+    background: white;
+}
+
+.solution-label {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 16px;
+    color: #003399;
+    font-weight: 600;
+}
+
+/* Sidebar styles (desktop) */
+#clue-sidebar {
+    width: 280px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 100px;
+}
+
+.clue-item {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.clue-item:hover {
+    background-color: #cddff6;  /* muted blue hover */
+}
+
+/* Hide mobile clue list by default */
+#mobile-clue-list {
+    display: none;
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Mobile rules */
+@media (max-width: 768px) {
+    #main-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #clue-sidebar {
+        display: none;
+    }
+
+    #mobile-clue-list {
+        display: block;
+    }
+}
+
+/* Puzzle input fields */
 #puzzle input {
     width: 100%;
     height: 100%;
@@ -61,62 +129,9 @@ h1 {
     border: none;
     outline: none;
     background: transparent;
-    -webkit-font-smoothing: antialiased;
 }
 
-/* Solution row layout */
-#solution-container {
-    display: flex;
-    justify-content: center;
-    margin: 30px 0;
-    gap: 6px;
-}
-
-/* Each solution box */
-.solution-box {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    border: 1px solid #333;
-    background: white;
-}
-
-/* The small solution label inside the box */
-.solution-label {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    font-size: 16px;
-    color: #003399;
-    font-weight: 600;
-    font-family: 'Quicksand', sans-serif;
-}
-
-/* Solution input fields */
-.solution-box input {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 300;
-    font-family: 'Quicksand', sans-serif;
-    border: none;
-    outline: none;
-    -webkit-font-smoothing: antialiased;
-}
-
-/* Optional: prevent weird selection highlight */
-input::selection {
-    background: #d0e0f5;
-}
-
-/* Slightly larger clue numbers inside the puzzle */
-.number {
-    font-size: 14px !important;
-    fill: black;
-    font-family: 'Quicksand', sans-serif;
-}
-
+/* Highlight for active cells */
 .highlighted {
     box-shadow: inset 0 0 0 9999px rgba(0, 100, 255, 0.2);
 }
@@ -125,15 +140,4 @@ input::selection {
     background: white;
     border: 1px solid #333;
     box-sizing: border-box;
-}
-
-.clue-item {
-    cursor: pointer;
-    padding: 5px;
-    border-radius: 5px;
-    transition: background-color 0.2s;
-}
-
-.clue-item:hover {
-    background-color: #cddff6;
 }
