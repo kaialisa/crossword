@@ -120,6 +120,8 @@ function buildSidebar() {
         clueElement.innerText = `${clueRef.number}. ${clueText}`;
         clueElement.style.marginBottom = '10px';
         clueElement.style.cursor = 'pointer';
+        clueElement.classList.add('clue-item');
+
 
         clueElement.addEventListener('click', () => {
             selectedClue = clueRef;

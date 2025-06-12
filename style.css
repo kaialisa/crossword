@@ -24,6 +24,7 @@ h1 {
     position: relative;
     width: fit-content;
     margin: auto;
+    padding: 30px;
 }
 
 #puzzle-background {
@@ -126,3 +127,13 @@ input::selection {
     box-sizing: border-box;
 }
 
+.clue-item {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.clue-item:hover {
+    background-color: #cddff6;
+}
