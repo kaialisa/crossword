@@ -121,7 +121,7 @@ function autoScalePuzzle() {
 
     const scaleFactor = Math.min(1, availableWidth / puzzleWidth);
 
-    scaleContainer.style.transform = `scale(${scaleFactor})`;
+   scaleContainer.style.transform = `scale(${scaleFactor})`;
     scaleContainer.style.transformOrigin = 'top center';
 }
 
@@ -249,6 +249,7 @@ input.style.pointerEvents = 'auto';
     }
 
     highlightClueCells();
+    updateActiveCluePopup();
 });
 
 
@@ -502,6 +503,22 @@ function highlightClueCells() {
         const wrapper = document.querySelector(`#puzzle .cell-wrapper[data-row="${r}"][data-col="${c}"]`);
         if (wrapper) wrapper.classList.add('highlighted');
     });
+
+    updateActiveCluePopup();
+}
+
+function updateActiveCluePopup() {
+    const popup = document.getElementById('active-clue-popup');
+
+    if (!selectedClue.direction || !selectedClue.number) {
+        popup.style.display = 'none';
+        return;
+    }
+
+    const clue = crossword.clues[selectedClue.direction][selectedClue.number];
+    const clueText = clue.text || 'Hinweis nicht gefunden';
+    popup.textContent = `${selectedClue.number}. ${clueText}`;
+    popup.style.display = 'block';
 }
 
 
