@@ -331,44 +331,48 @@ function moveToPreviousInput(currentInput) {
     const row = parseInt(currentInput.dataset.row);
     const col = parseInt(currentInput.dataset.col);
 
-    // 1. Try previous column (left)
-     if (col - 1 >= 0) {
-        const leftInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${col - 1}"]`);
-        if (leftInput) {
-            leftInput.focus();
-            return;
-        }
+    const possibleClues = getCluesAtCell(row, col);
+    let activeClue = null;
+
+    if (selectedClue && possibleClues.some(c => c.direction === selectedClue.direction && c.number === selectedClue.number)) {
+        activeClue = selectedClue;
+    } else if (possibleClues.length > 0) {
+        activeClue = possibleClues[0];
+    } else {
+        return defaultMoveToPreviousInput(currentInput);
     }
 
-    // 2. Try previous row (up)
-   if (row - 1 >= 0) {
-        const upInput = document.querySelector(`#puzzle input[data-row="${row - 1}"][data-col="${col}"]`);
-        if (upInput) {
-            upInput.focus();
-            return;
-        }
-    }
+    const clue = crossword.clues[activeClue.direction][activeClue.number];
+    const idx = clue.cells.findIndex(([r, c]) => r === row && c === col);
 
-
-    // 3. Fallback: search remaining inputs before current
-    const inputs = [...document.querySelectorAll('#puzzle input')];
-    let idx = inputs.indexOf(currentInput);
-
+    // Try to find previous cell inside current clue
     for (let i = idx - 1; i >= 0; i--) {
-        if (inputs[i]) {
-            inputs[i].focus();
+        const [prevRow, prevCol] = clue.cells[i];
+        const prevInput = document.querySelector(`#puzzle input[data-row="${prevRow}"][data-col="${prevCol}"]`);
+        if (prevInput) {
+            prevInput.focus();
             return;
         }
     }
 
-    // 4. If none found, wrap around to last input
-    for (let i = inputs.length - 1; i > idx; i--) {
-        if (inputs[i]) {
-            inputs[i].focus();
-            return;
+    // Beginning of clue reached, move to previous clue
+    const prevClue = getPreviousClue(activeClue);
+    if (prevClue) {
+        selectedClue = prevClue;
+        highlightClueCells();
+
+        const prevClueObj = crossword.clues[prevClue.direction][prevClue.number];
+        for (let i = prevClueObj.cells.length - 1; i >= 0; i--) {
+            const [prevRow, prevCol] = prevClueObj.cells[i];
+            const prevInput = document.querySelector(`#puzzle input[data-row="${prevRow}"][data-col="${prevCol}"]`);
+            if (prevInput) {
+                prevInput.focus();
+                return;
+            }
         }
     }
 }
+
 
 
 // Build solution row based on solutionMap letters
@@ -524,6 +528,15 @@ function getNextClue(activeClue) {
     }
     return null;
 }
+function getPreviousClue(activeClue) {
+    const clueOrder = getClueOrder();
+    const idx = clueOrder.findIndex(c => c.direction === activeClue.direction && c.number === activeClue.number);
+    if (idx > 0) {
+        return clueOrder[idx - 1];
+    }
+    return null;
+}
+
 
 
 function highlightClueCells() {
