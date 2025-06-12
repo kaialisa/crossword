@@ -217,34 +217,48 @@ function moveToNextInput(currentInput) {
     const row = parseInt(currentInput.dataset.row);
     const col = parseInt(currentInput.dataset.col);
 
-    // 1. Try next column (right)
-    if (col + 1 < crossword.width) {
-        const rightInput = document.querySelector(`#puzzle input[data-row="${row}"][data-col="${col + 1}"]`);
-        if (rightInput) {
-            rightInput.focus();
+    const possibleClues = getCluesAtCell(row, col);
+    let activeClue = null;
+
+    if (selectedClue && possibleClues.some(c => c.direction === selectedClue.direction && c.number === selectedClue.number)) {
+        activeClue = selectedClue;
+    } else if (possibleClues.length > 0) {
+        activeClue = possibleClues[0];
+    } else {
+        return defaultMoveToNextInput(currentInput);
+    }
+
+    const clue = crossword.clues[activeClue.direction][activeClue.number];
+    const idx = clue.cells.findIndex(([r, c]) => r === row && c === col);
+
+    // Try to find next empty cell inside current clue
+    for (let i = idx + 1; i < clue.cells.length; i++) {
+        const [nextRow, nextCol] = clue.cells[i];
+        const nextInput = document.querySelector(`#puzzle input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+        if (nextInput && nextInput.value === '') {
+            nextInput.focus();
             return;
         }
     }
 
-    // 2. If no right cell found, try next row (down)
-    if (row + 1 < crossword.height) {
-        const downInput = document.querySelector(`#puzzle input[data-row="${row + 1}"][data-col="${col}"]`);
-        if (downInput) {
-            downInput.focus();
-            return;
-        }
-    }
+    // End of current clue reached, move to next clue
+    const nextClue = getNextClue(activeClue);
+    if (nextClue) {
+        selectedClue = nextClue;
+        highlightClueCells();
 
-    // 3. Fallback: search reading order (DOM order)
-    const inputs = [...document.querySelectorAll('#puzzle input')];
-    let idx = inputs.indexOf(currentInput);
-    while (++idx < inputs.length) {
-        if (!inputs[idx].value) {
-            inputs[idx].focus();
-            return;
+        const nextClueObj = crossword.clues[nextClue.direction][nextClue.number];
+        for (let [nextRow, nextCol] of nextClueObj.cells) {
+            const nextInput = document.querySelector(`#puzzle input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+            if (nextInput && nextInput.value === '') {
+                nextInput.focus();
+                return;
+            }
         }
     }
 }
+
+
 
 
 function moveToPreviousInput(currentInput) {
@@ -372,6 +386,28 @@ function getCluesAtCell(row, col) {
     }
 
     return clues;
+}
+function getClueOrder() {
+    const allClues = [];
+
+    for (let num in crossword.clues.across) {
+        allClues.push({ direction: 'across', number: num });
+    }
+
+    for (let num in crossword.clues.down) {
+        allClues.push({ direction: 'down', number: num });
+    }
+
+    allClues.sort((a, b) => parseInt(a.number) - parseInt(b.number));
+    return allClues;
+}
+function getNextClue(activeClue) {
+    const clueOrder = getClueOrder();
+    const idx = clueOrder.findIndex(c => c.direction === activeClue.direction && c.number === activeClue.number);
+    if (idx >= 0 && idx < clueOrder.length - 1) {
+        return clueOrder[idx + 1];
+    }
+    return null;
 }
 
 
