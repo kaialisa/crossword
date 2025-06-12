@@ -160,14 +160,29 @@ wrapper.style.background = 'white';
                 });
 
                 input.addEventListener('click', (e) => {
-                    const row = parseInt(e.target.dataset.row);
-                    const col = parseInt(e.target.dataset.col);
-                    const clue = getClueAtCell(row, col);
-                    if (clue) {
-                        selectedClue = clue;
-                        highlightClueCells();
-                    }
-                });
+    const row = parseInt(e.target.dataset.row);
+    const col = parseInt(e.target.dataset.col);
+    const availableClues = getCluesAtCell(row, col);
+
+    if (availableClues.length === 0) return; // no clue here
+
+    // If same cell, toggle between across/down
+    if (selectedClue.row === row && selectedClue.col === col) {
+        // Toggle
+        const currentIndex = availableClues.findIndex(c =>
+            c.direction === selectedClue.direction && c.number === selectedClue.number
+        );
+        const nextIndex = (currentIndex + 1) % availableClues.length;
+        selectedClue = { ...availableClues[nextIndex], row, col };
+    } else {
+        // First click — pick across if available
+        const acrossFirst = availableClues.find(c => c.direction === 'across') || availableClues[0];
+        selectedClue = { ...acrossFirst, row, col };
+    }
+
+    highlightClueCells();
+});
+
 
                 input.addEventListener('input', (e) => {
                     const val = e.target.value.toUpperCase();
@@ -332,21 +347,26 @@ function checkSolution() {
     });
 }
 
-function getClueAtCell(row, col) {
+function getCluesAtCell(row, col) {
+    const clues = [];
+
     for (let num in crossword.clues.across) {
         const clue = crossword.clues.across[num];
         if (clue.cells.some(([r, c]) => r === row && c === col)) {
-            return { direction: 'across', number: num };
+            clues.push({ direction: 'across', number: num });
         }
     }
+
     for (let num in crossword.clues.down) {
         const clue = crossword.clues.down[num];
         if (clue.cells.some(([r, c]) => r === row && c === col)) {
-            return { direction: 'down', number: num };
+            clues.push({ direction: 'down', number: num });
         }
     }
-    return null;
+
+    return clues;
 }
+
 
 function highlightClueCells() {
     document.querySelectorAll('#puzzle .cell-wrapper').forEach(wrapper => wrapper.classList.remove('highlighted'));
