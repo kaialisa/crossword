@@ -310,27 +310,35 @@ function buildSolutionRow() {
     const solutionContainer = document.getElementById('solution-container');
     solutionContainer.innerHTML = '';
 
-    // Add the label
+    // Create the outer flex wrapper
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.justifyContent = 'center';
+    wrapper.style.marginBottom = '20px';  // space below entire row
+
+    // Create the label
     const label = document.createElement('div');
     label.innerText = 'Lösungswort:';
     label.style.marginRight = '10px';
     label.style.fontSize = '18px';
     label.style.fontWeight = 'bold';
-    solutionContainer.appendChild(label);
+    wrapper.appendChild(label);
 
+    // Now add the solution boxes
     const sortedLetters = Object.keys(crossword.solutionMap).sort();
 
     sortedLetters.forEach(letter => {
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'relative';
-        wrapper.style.width = '40px';
-        wrapper.style.height = '40px';
-        wrapper.style.border = '1px solid #333';
-        wrapper.style.background = 'white';
-        wrapper.style.display = 'flex';
-        wrapper.style.alignItems = 'center';
-        wrapper.style.justifyContent = 'center';
-        wrapper.style.marginRight = '5px';
+        const box = document.createElement('div');
+        box.style.position = 'relative';
+        box.style.width = '40px';
+        box.style.height = '40px';
+        box.style.border = '1px solid #333';
+        box.style.background = 'white';
+        box.style.display = 'flex';
+        box.style.alignItems = 'center';
+        box.style.justifyContent = 'center';
+        box.style.marginRight = '5px';
 
         const hint = document.createElement('div');
         hint.innerText = letter;
@@ -340,7 +348,7 @@ function buildSolutionRow() {
         hint.style.fontSize = '16px';
         hint.style.color = '#003399';
         hint.style.fontWeight = '900';
-        wrapper.appendChild(hint);
+        box.appendChild(hint);
 
         const input = document.createElement('input');
         input.maxLength = 1;
@@ -354,11 +362,15 @@ function buildSolutionRow() {
         input.style.border = 'none';
         input.style.outline = 'none';
         input.style.background = 'transparent';
-        wrapper.appendChild(input);
+        box.appendChild(input);
 
-        solutionContainer.appendChild(wrapper);
+        wrapper.appendChild(box);
     });
+
+    // Finally add everything into solution container
+    solutionContainer.appendChild(wrapper);
 }
+
 
 
 // Update the solution row
