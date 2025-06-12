@@ -59,7 +59,7 @@ h1 {
     text-transform: uppercase;
     border: none;
     outline: none;
-    background: white;
+    background: transparent;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -115,3 +115,14 @@ input::selection {
     fill: black;
     font-family: 'Quicksand', sans-serif;
 }
+
+.highlighted {
+    box-shadow: inset 0 0 0 9999px rgba(0, 100, 255, 0.2);
+}
+
+.cell-wrapper {
+    background: white;
+    border: 1px solid #333;
+    box-sizing: border-box;
+}
+

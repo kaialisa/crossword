@@ -1,4 +1,6 @@
+let selectedClue = { direction: null, number: null };
 function buildGrid() {
+    
     const puzzleWrapper = document.getElementById('puzzle');
     puzzleWrapper.innerHTML = ''; // Clear
 
@@ -115,55 +117,78 @@ function createInputs(container, cellSize) {
         for (let col = 0; col < crossword.width; col++) {
             const isBlocked = crossword.blocks.some(([r, c]) => r === row && c === col);
             if (!isBlocked) {
+                // Create wrapper div for proper positioning
+               const wrapper = document.createElement('div');
+wrapper.classList.add('cell-wrapper');
+wrapper.dataset.row = row;
+wrapper.dataset.col = col;
+wrapper.style.position = 'absolute';
+wrapper.style.left = `${col * cellSize}px`;
+wrapper.style.top = `${row * cellSize}px`;
+wrapper.style.width = `${cellSize}px`;
+wrapper.style.height = `${cellSize}px`;
+wrapper.style.background = 'white';
+
+
+                // Create input inside wrapper
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.maxLength = 1;
                 input.dataset.row = row;
                 input.dataset.col = col;
 
-                input.style.position = 'absolute';
-                input.style.left = `${col * cellSize}px`;
-                input.style.top = `${row * cellSize}px`;
-                input.style.width = `${cellSize}px`;
-                input.style.height = `${cellSize}px`;
+                input.style.width = '100%';
+                input.style.height = '100%';
                 input.style.textAlign = 'center';
                 input.style.fontSize = '18px';
                 input.style.fontWeight = 'bold';
                 input.style.border = 'none';
                 input.style.outline = 'none';
                 input.style.background = 'transparent';
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Backspace') {
-        if (e.target.selectionStart === 0) {
-            const moved = moveToPreviousInput(e.target);
-            if (moved) {
-                moved.value = '';  // Clear previous cell
-                e.preventDefault();
-            }
-        }
-    }
-});
 
+                // Attach event listeners BEFORE appending
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace') {
+                        if (e.target.selectionStart === 0) {
+                            const moved = moveToPreviousInput(e.target);
+                            if (moved) {
+                                moved.value = '';
+                                e.preventDefault();
+                            }
+                        }
+                    }
+                });
 
-input.addEventListener('input', (e) => {
-    const val = e.target.value.toUpperCase();
-    e.target.value = val;
+                input.addEventListener('click', (e) => {
+                    const row = parseInt(e.target.dataset.row);
+                    const col = parseInt(e.target.dataset.col);
+                    const clue = getClueAtCell(row, col);
+                    if (clue) {
+                        selectedClue = clue;
+                        highlightClueCells();
+                    }
+                });
 
-    if (val.length === 1) {
-        moveToNextInput(e.target);
-    }
+                input.addEventListener('input', (e) => {
+                    const val = e.target.value.toUpperCase();
+                    e.target.value = val;
 
-    checkSolution();
-});
+                    if (val.length === 1) {
+                        moveToNextInput(e.target);
+                    }
+                    checkSolution();
+                });
 
-
-                inputLayer.appendChild(input);
+                // Append input into wrapper
+                wrapper.appendChild(input);
+                inputLayer.appendChild(wrapper);
             }
         }
     }
 
     container.appendChild(inputLayer);
 }
+
 
 // Auto-advance logic
 function moveToNextInput(currentInput) {
@@ -306,5 +331,36 @@ function checkSolution() {
         if (solutionInput) solutionInput.value = value;
     });
 }
+
+function getClueAtCell(row, col) {
+    for (let num in crossword.clues.across) {
+        const clue = crossword.clues.across[num];
+        if (clue.cells.some(([r, c]) => r === row && c === col)) {
+            return { direction: 'across', number: num };
+        }
+    }
+    for (let num in crossword.clues.down) {
+        const clue = crossword.clues.down[num];
+        if (clue.cells.some(([r, c]) => r === row && c === col)) {
+            return { direction: 'down', number: num };
+        }
+    }
+    return null;
+}
+
+function highlightClueCells() {
+    document.querySelectorAll('#puzzle .cell-wrapper').forEach(wrapper => wrapper.classList.remove('highlighted'));
+
+    if (!selectedClue.direction || !selectedClue.number) return;
+
+    const clue = crossword.clues[selectedClue.direction][selectedClue.number];
+    clue.cells.forEach(([r, c]) => {
+        const wrapper = document.querySelector(`#puzzle .cell-wrapper[data-row="${r}"][data-col="${c}"]`);
+        if (wrapper) wrapper.classList.add('highlighted');
+    });
+}
+
+
+
 
 buildGrid();
