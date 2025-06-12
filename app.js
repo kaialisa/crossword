@@ -1,3 +1,7 @@
+console.log(crossword);
+console.log(crossword.clues);
+console.log(crossword.clues.across);
+
 let selectedClue = { direction: null, number: null };
 function buildGrid() {
     
@@ -134,9 +138,6 @@ function buildSidebar() {
     const sidebar = document.getElementById('clue-sidebar');
     sidebar.innerHTML = '';
 
-    const mobileSidebar = document.getElementById('mobile-clue-contents');
-    mobileSidebar.innerHTML = '';
-
     const clueOrder = getClueOrder();
 
     clueOrder.forEach(clueRef => {
@@ -162,7 +163,7 @@ function buildSidebar() {
         const mobileClue = document.createElement('div');
         mobileClue.innerText = fullText;
         mobileClue.style.marginBottom = '10px';
-        mobileSidebar.appendChild(mobileClue);
+        
     });
 }
 
@@ -524,5 +525,7 @@ function updateActiveCluePopup() {
 
 
 
-buildGrid();
-buildSidebar();
+document.addEventListener("DOMContentLoaded", function () {
+    buildGrid();
+    buildSidebar();
+});
