@@ -144,7 +144,7 @@ h1 {
     box-sizing: border-box;
 }
 
-/* NEW: Scaling behavior */
+/* Scaling behavior */
 .puzzle-scaler {
     width: 100%;
     max-width: 100%;
@@ -162,3 +162,8 @@ h1 {
     left: 0;
 }
 
+@media (max-width: 768px) {
+    #mobile-clue-list {
+        margin-top: -650px;  /* Adjust this value */
+    }
+}
