@@ -2,12 +2,18 @@ const cellSize = 40;
 let selectedClue = { direction: null, number: null };
 function buildGrid() {
     const puzzleWrapper = document.getElementById('puzzle');
-    puzzleWrapper.innerHTML = '';
+puzzleWrapper.innerHTML = '';
+
+const container = document.createElement('div');
+container.classList.add('puzzle-scaler');
+container.style.position = 'relative';
+container.style.width = '100%';
+container.style.aspectRatio = `${crossword.width} / ${crossword.height}`;
+container.style.maxWidth = '90vw';
+container.style.margin = 'auto';
 
     const cellSize = 40;
     const svgNS = "http://www.w3.org/2000/svg";
-
-    const container = document.createElement('div');
     container.classList.add('puzzle-scaler');
     container.style.position = 'relative';
     container.style.width = '100%';
@@ -601,6 +607,30 @@ function updateActiveCluePopup() {
 }
 
 
+function setupZoomBehavior() {
+    const inputs = document.querySelectorAll('#puzzle input');
+    const zoomScale = 1.5;
+
+    inputs.forEach(input => {
+        input.addEventListener('focus', (e) => {
+            const viewport = document.getElementById('puzzle-viewport');
+            const rect = e.target.getBoundingClientRect();
+            const parentRect = viewport.getBoundingClientRect();
+
+            const offsetX = (rect.left + rect.width / 2) - (parentRect.left + parentRect.width / 2);
+            const offsetY = (rect.top + rect.height / 2) - (parentRect.top + parentRect.height / 2);
+
+            viewport.style.transition = 'transform 0.3s ease';
+            viewport.style.transform = `scale(${zoomScale}) translate(${-offsetX / zoomScale}px, ${-offsetY / zoomScale}px)`;
+        });
+
+        input.addEventListener('blur', () => {
+            const viewport = document.getElementById('puzzle-viewport');
+            viewport.style.transition = 'transform 0.3s ease';
+            viewport.style.transform = `scale(1) translate(0,0)`;
+        });
+    });
+}
 
 
 
@@ -610,6 +640,7 @@ document.addEventListener("DOMContentLoaded", function () {
     buildGrid();
     buildSidebar();
     loadProgress();
+    setupZoomBehavior(); 
     const popup = document.getElementById('active-clue-popup');
     popup.style.display = 'none';
 });
