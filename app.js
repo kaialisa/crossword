@@ -605,7 +605,6 @@ function updateActiveCluePopup() {
     }, 150);
 }
 
-
 function setupZoomBehavior() {
     const inputs = document.querySelectorAll('#puzzle input');
     const zoomScale = 1.5;
@@ -617,15 +616,23 @@ function setupZoomBehavior() {
             const zoomWrapper = document.getElementById('zoom-wrapper');
             zoomWrapper.style.transition = 'transform 0.3s ease';
             zoomWrapper.style.transform = `scale(${zoomScale})`;
+
+       
         });
 
         input.addEventListener('blur', () => {
             const zoomWrapper = document.getElementById('zoom-wrapper');
             zoomWrapper.style.transition = 'transform 0.3s ease';
             zoomWrapper.style.transform = `scale(1)`;
+
+            // Force scroll position reset
+            window.scrollTo(0, 0);
+
+       
         });
     });
 }
+
 
 
 
