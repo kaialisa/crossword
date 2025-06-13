@@ -608,35 +608,25 @@ function updateActiveCluePopup() {
 
 function setupZoomBehavior() {
     const inputs = document.querySelectorAll('#puzzle input');
-    const zoomScale = 1.5; 
+    const zoomScale = 1.5;
 
     inputs.forEach(input => {
-        input.addEventListener('focus', (e) => {
-            if (window.innerWidth > 768) return;  // only mobile
+        input.addEventListener('focus', () => {
+            if (window.innerWidth > 768) return;
 
             const zoomWrapper = document.getElementById('zoom-wrapper');
-            const rect = e.target.getBoundingClientRect();
-
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-
-            const screenCenterX = window.innerWidth / 2;
-            const screenCenterY = window.innerHeight / 2;
-
-            const offsetX = (centerX - screenCenterX) / zoomScale;
-            const offsetY = (centerY - screenCenterY) / zoomScale;
-
             zoomWrapper.style.transition = 'transform 0.3s ease';
-            zoomWrapper.style.transform = `scale(${zoomScale}) translate(${-offsetX}px, ${-offsetY}px)`;
+            zoomWrapper.style.transform = `scale(${zoomScale})`;
         });
 
         input.addEventListener('blur', () => {
             const zoomWrapper = document.getElementById('zoom-wrapper');
             zoomWrapper.style.transition = 'transform 0.3s ease';
-            zoomWrapper.style.transform = `scale(1) translate(0, 0)`;
+            zoomWrapper.style.transform = `scale(1)`;
         });
     });
 }
+
 
 
 
