@@ -119,9 +119,9 @@ function buildSidebar() {
     sidebar.innerHTML = '';
 // Add static question at top
     const header = document.createElement('div');
-    header.innerText = 'In welchem Bundesland werden diese Feste gefeiert?';
+    header.innerText = '';
     header.style.fontWeight = 'bold';
-    header.style.marginBottom = '20px';
+    header.style.marginBottom = '0px';
     sidebar.appendChild(header);
     const clueOrder = getClueOrder();
 
@@ -594,13 +594,13 @@ function updateActiveCluePopup() {
         popup.innerHTML = `
             <div style="
                 font-weight: bold; 
-                margin-bottom: 10px; 
+                margin-bottom: 0px; 
                 display: flex; 
                 align-items: center; 
                 justify-content: center;
             ">
-                <span style="font-size: 10px; margin-right: 8px;">💡</span>
-                <span><strong>In welchem Bundesland werden diese Feste gefeiert?</strong></span>
+                <span style="font-size: 10px; margin-right: 8px;"></span>
+                <span><strong></strong></span>
             </div>
             <div style="
                 display: flex;  
