@@ -135,9 +135,9 @@ function buildSidebar() {
     sidebar.innerHTML = '';
 // Add static question at top
     const header = document.createElement('div');
-    header.innerText = 'In welchem Bundesland werden diese Feste gefeiert?';
+    header.innerText = '';
     header.style.fontWeight = 'bold';
-    header.style.marginBottom = '20px';
+    header.style.marginBottom = '0px';
     sidebar.appendChild(header);
     const clueOrder = getClueOrder();
 
