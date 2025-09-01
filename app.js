@@ -220,7 +220,7 @@ wrapper.style.background = 'transparent';
                 input.style.outline = 'none';
                 input.style.background = 'transparent';
                 input.style.pointerEvents = 'auto';
-input.style.zIndex = '2';  // <-- Inputs themselves above everything
+input.style.zIndex = '2git ';  // <-- Inputs themselves above everything
 input.style.pointerEvents = 'auto';
                 // Attach event listeners BEFORE appending
                 input.addEventListener('keydown', (e) => {
