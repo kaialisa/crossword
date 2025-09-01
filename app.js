@@ -580,8 +580,8 @@ function updateActiveCluePopup() {
     const clueText = clue.text || 'Hinweis nicht gefunden';
 
     popup.innerHTML = `
-        <div style="font-weight: bold; margin-bottom: 10px;">
-            In welchem Bundesland werden diese Feste gefeiert?
+        <div style="font-weight: bold; margin-bottom: 0px;">
+           
         </div>
         <div>
             ${selectedClue.number}. ${clueText}
